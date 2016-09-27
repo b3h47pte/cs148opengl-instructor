@@ -11,7 +11,6 @@ public:
     Assignment2(std::shared_ptr<class Scene> inputScene, std::shared_ptr<class Camera> inputCamera);
 
     static std::unique_ptr<Application> CreateApplication(std::shared_ptr<class Scene> scene, std::shared_ptr<class Camera> camera);
-    static std::shared_ptr<class Camera> CreateCamera();
 
     virtual glm::vec2 GetWindowSize() const;
 
@@ -30,6 +29,9 @@ private:
     std::shared_ptr<class SceneObject> sceneObject;
 
     std::shared_ptr<class Light> pointLight;
+
+    GLuint shaderProgram;
+    GLuint vao;
 };
 
 #endif

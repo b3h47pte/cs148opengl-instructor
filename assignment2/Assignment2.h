@@ -32,6 +32,8 @@ private:
 
     GLuint shaderProgram;
     GLuint vao;
+    std::vector<glm::vec4> vertexPositions;
+    float time;
 };
 
 #endif

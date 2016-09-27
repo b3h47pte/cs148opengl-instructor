@@ -61,6 +61,19 @@ GLuint CreateProgram(GLuint vertex, GLuint fragment)
 Assignment2::Assignment2(std::shared_ptr<class Scene> inputScene, std::shared_ptr<class Camera> inputCamera):
     Application(std::move(inputScene), std::move(inputCamera))
 {
+    vertexPositions = 
+        std::initializer_list<glm::vec4>({
+            // Triangle 1
+            {0.f, 0.f, 0.f, 1.f},
+            {1.f, 0.f, 0.f, 1.f},
+            {1.f, 1.f, 0.f, 1.f},
+            // Triangle 2
+            {0.f, 0.f, 0.f, 1.f},
+            {-1.f, 1.f, 0.f, 1.f},
+            {-1.f, 0.f, 0.f, 1.f}
+        });
+
+    time = 0.f;
 }
 
 std::unique_ptr<Application> Assignment2::CreateApplication(std::shared_ptr<class Scene> scene, std::shared_ptr<class Camera> camera)
@@ -127,39 +140,28 @@ void Assignment2::SetupExample1()
     OGL_CALL(glDeleteShader(fragmentShaderId));
     // FINISH DO NOT EDIT OR REMOVE THE CODE IN THIS SECTION
 
-    // DO NOT EDIT OR REMOVE THE CODE IN THIS SECTION
-    std::vector<glm::vec4> vertexPositions = 
-        std::initializer_list<glm::vec4>({
-            // Triangle 1
-            {0.f, 0.f, 0.f, 1.0f},
-            {0.7f, 0.f, 0.f, 1.0f},
-
-            {0.7f, 0.f, 0.f, 1.0f},
-            {0.7f, 0.7f, 0.f, 1.0f},
-
-            {0.7f, 0.7f, 0.f, 1.0f},
-            {0.f, 0.f, 0.f, 1.0f},
-
-            // Triangle 2
-            {0.f, 0.f, 0.f, 1.0f},
-            {-0.7f, 0.7f, 0.f, 1.0f},
-
-            {-0.7f, 0.7f, 0.f, 1.0f},
-            {-0.7f, 0.f, 0.f, 1.0f},
-
-            {-0.7f, 0.f, 0.f, 1.0f},
-            {0.f, 0.f, 0.f, 1.0f}
-        });
-    // FINISH DO NOT EDIT OR REMOVE THE CODE IN THIS SECTION
-
     // Insert "Setup Buffers" code here.
     OGL_CALL(glGenVertexArrays(1, &vao));
     OGL_CALL(glBindVertexArray(vao));
+
+    GLuint positionBufferId;
+    OGL_CALL(glGenBuffers(1, &positionBufferId));
+    OGL_CALL(glBindBuffer(GL_ARRAY_BUFFER, positionBufferId));
+    OGL_CALL(glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec4) * vertexPositions.size(), &vertexPositions[0], GL_STATIC_DRAW));
+    OGL_CALL(glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 0, 0));
+    OGL_CALL(glEnableVertexAttribArray(0));
 }
 
 void Assignment2::Tick(double deltaTime)
 {
-    // Insert "Send Buffers to the GPU" code here.
+    // Insert "Send Buffers to the GPU" and "Slightly-More Advanced Shaders" code here.
+    time += deltaTime;
 
-    // Insert "Slightly-More Advanced Shaders" code here.
+    OGL_CALL(glUseProgram(shaderProgram));
+
+    const GLint uniformLoc = OGL_CALL(glGetUniformLocation(shaderProgram, "inputTime"));
+    OGL_CALL(glUniform1f(uniformLoc, time));
+
+    OGL_CALL(glBindVertexArray(vao));
+    OGL_CALL(glDrawArrays(GL_TRIANGLES, 0, vertexPositions.size()));
 }
